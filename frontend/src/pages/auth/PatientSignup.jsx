@@ -1,10 +1,12 @@
-import { useState } from "react";
-import axios from "axios";
-import Cookies from "js-cookie";
+import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import AuthContext from "../../context/AuthContext";
+import API from "../../api/axios";
+import toast from "react-hot-toast";
 
 const PatientSignup = () => {
   const navigate = useNavigate();
+  // const { login } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     name: "",
@@ -14,7 +16,7 @@ const PatientSignup = () => {
     password: "",
     illnessHistory: "",
     surgeryHistory: "",
-    profileImage: null
+    profileImage: null,
   });
 
   const handleChange = (e) => {
@@ -32,45 +34,179 @@ const PatientSignup = () => {
       const formData = new FormData();
 
       Object.keys(form).forEach((key) => {
-        formData.append(key, form[key]);
+        if (key === "profileImage") {
+          if (form.profileImage) {
+            formData.append(key, form.profileImage);
+          }
+        } else {
+          formData.append(key, form[key]);
+        }
       });
 
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/patient/signup",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" }
-        }
-      );
+      let res = await API.post("/api/auth/patient/signup", formData);
 
-      // ✅ store token in cookies
-      Cookies.set("token", res.data.token, { expires: 7 });
+    // ✅ redirect to login page after signup
+    
+          if(res?.data?.status == 'success' && res?.data?.message == 'Patient created successfully.'){
+      toast.success("Patient Registered!");
+      console.log('Patient Registered!')
+      navigate("/login");
+      }
 
-      alert("Signup successful!");
-      navigate("/doctors");
     } catch (err) {
-      alert(err.response?.data?.msg || "Error occurred");
+      toast.error(err.response?.data?.msg || "Signup failed");
     }
   };
 
   return (
-    <div>
-      <h2>Patient Signup</h2>
+    <div className="flex justify-center items-center min-h-[80vh]">
+      <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg">
+        {/* Title */}
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Patient Signup 🧑
+        </h2>
 
-      <form onSubmit={handleSubmit}>
-        <input name="name" placeholder="Name" onChange={handleChange} required />
-        <input name="age" type="number" placeholder="Age" onChange={handleChange} required />
-        <input name="email" placeholder="Email" onChange={handleChange} required />
-        <input name="phone" placeholder="Phone" onChange={handleChange} required />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Full Name
+            </label>
+            <input
+              name="name"
+              placeholder="Enter your name"
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
 
-        <input name="illnessHistory" placeholder="Illness (comma separated)" onChange={handleChange} />
-        <input name="surgeryHistory" placeholder="Surgery (comma separated)" onChange={handleChange} />
+          {/* Age */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Age
+            </label>
+            <input
+              name="age"
+              type="number"
+              min={1}
+              max={120}
+              onKeyDown={(e) => {
+                if (e.key === "-" || e.key === "e") {
+                  e.preventDefault();
+                }
+              }}
+              placeholder="Enter your age"
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
 
-        <input type="file" name="profileImage" onChange={handleChange} />
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Email
+            </label>
+            <input
+              name="email"
+              type="email"
+              placeholder="Enter your email"
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
 
-        <button type="submit">Signup</button>
-      </form>
+          {/* Phone */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Phone
+            </label>
+            <input
+              name="phone"
+              placeholder="Enter phone number"
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Password
+            </label>
+            <input
+              name="password"
+              type="password"
+              placeholder="Enter password"
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+
+          {/* Illness */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Illness History
+            </label>
+            <input
+              name="illnessHistory"
+              placeholder="e.g. diabetes, asthma"
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+
+          {/* Surgery */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Surgery History
+            </label>
+            <input
+              name="surgeryHistory"
+              placeholder="e.g. knee surgery"
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+
+          {/* Profile Image */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Profile Image
+            </label>
+            <input
+              type="file"
+              name="profileImage"
+              onChange={handleChange}
+              className="w-full text-sm"
+            />
+          </div>
+
+          {/* Button */}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+          >
+            Signup
+          </button>
+        </form>
+
+        {/* Footer */}
+        <p className="text-sm text-gray-500 text-center mt-4">
+          Already have an account?{" "}
+          <span
+            onClick={() => navigate("/login")}
+            className="text-blue-600 cursor-pointer hover:underline"
+          >
+            Login
+          </span>
+        </p>
+      </div>
     </div>
   );
 };

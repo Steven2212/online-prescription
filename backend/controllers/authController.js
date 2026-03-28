@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, {
-    expiresIn: "7d"
+    expiresIn: "7d",
   });
 };
 
@@ -19,18 +19,21 @@ exports.doctorSignup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-const doctor = await Doctor.create({
-  ...req.body,
-  password: hashedPassword,
-  profileImage: req.file ? req.file.path : ""
-});
+    const doctor = await Doctor.create({
+      ...req.body,
+      password: hashedPassword,
+      profileImage: req.file ? req.file.path : "",
+    });
 
     return res.status(200).json({
+      status: "success",
+      error: false,
+      message: "Doctor created successfully.",
       token: generateToken(doctor._id, "doctor"),
-      doctor
+      doctor,
     });
   } catch (err) {
-    res.status(500).json({ err: err.message });
+    return res.status(500).json({ err: err.message });
   }
 };
 
@@ -49,16 +52,18 @@ exports.patientSignup = async (req, res) => {
       password: hashedPassword,
       illnessHistory: req.body.illnessHistory?.split(","),
       surgeryHistory: req.body.surgeryHistory?.split(","),
-      profileImage: req.file ? req.file.path : ""  
-
+      profileImage: req.file ? req.file.path : "",
     });
 
-    res.json({
+    return res.json({
+      status: "success",
+      error: false,
+      message: "Patient created successfully.",
       token: generateToken(patient._id, "patient"),
-      patient
+      patient,
     });
   } catch (err) {
-    res.status(500).json({ err: err.message });
+    return res.status(500).json({ err: err.message });
   }
 };
 
@@ -77,7 +82,7 @@ exports.login = async (req, res) => {
 
     res.json({
       token: generateToken(user._id, role),
-      user
+      user,
     });
   } catch (err) {
     res.status(500).json({ err: err.message });

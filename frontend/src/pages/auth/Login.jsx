@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -33,12 +34,14 @@ const Login = () => {
 
       // Redirect
       if (form.role === "doctor") {
+        toast.success('Login successful')
         navigate("/doctor/dashboard");
       } else {
+        toast.success('Login successful')
         navigate("/doctors");
       }
     } catch (err) {
-      alert(err.response?.data?.msg || "Login failed");
+      toast.error(err.response?.data?.msg || "Login failed");
     }
   };
 

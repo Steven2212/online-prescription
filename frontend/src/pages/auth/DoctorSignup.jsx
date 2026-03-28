@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import API from "../../api/axios";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function DoctorSignup() {
   const { register, handleSubmit } = useForm();
@@ -18,12 +19,15 @@ export default function DoctorSignup() {
         }
       });
 
-      await API.post("/api/auth/doctor/signup", formData);
+      let res = await API.post("/api/auth/doctor/signup", formData);
 
-      alert("Doctor Registered!");
+      if(res?.data?.status == 'success' && res?.data?.message == 'Doctor created successfully.'){
+      toast.success("Doctor Registered!");
       navigate("/login");
+      }
+
     } catch (err) {
-      alert(err.response?.data?.msg || "Signup failed");
+      toast.error(err.response?.data?.msg || "Signup failed");
     }
   };
 

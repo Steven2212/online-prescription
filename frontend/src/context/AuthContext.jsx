@@ -5,10 +5,22 @@ const AuthContext = createContext();
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("user"))
-  );
+const [user, setUser] = useState(() => {
+  try {
+    const storedUser = localStorage.getItem("user");
 
+    if (!storedUser || storedUser === "undefined") {
+      return null;
+    }
+
+    return JSON.parse(storedUser);
+  } catch (error) {
+    console.error("Invalid user in localStorage, clearing...");
+    console.error(error?.message)
+    localStorage.removeItem("user");
+    return null;
+  }
+});
   const login = (data) => {
     // ✅ store token in cookies
     Cookies.set("token", data.token, { expires: 7 });
