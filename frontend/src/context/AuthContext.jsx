@@ -5,37 +5,38 @@ const AuthContext = createContext();
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
-const [user, setUser] = useState(() => {
-  try {
-    const storedUser = localStorage.getItem("user");
+  const [user, setUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem("user");
 
-    if (!storedUser || storedUser === "undefined") {
+      if (!storedUser || storedUser === "undefined") {
+        return null;
+      }
+
+      return JSON.parse(storedUser);
+    } catch (error) {
+      console.error("Invalid user in localStorage, clearing...");
+      console.error(error?.message);
+      localStorage.removeItem("user");
       return null;
     }
+  });
 
-    return JSON.parse(storedUser);
-  } catch (error) {
-    console.error("Invalid user in localStorage, clearing...");
-    console.error(error?.message)
-    localStorage.removeItem("user");
-    return null;
-  }
-});
   const login = (data) => {
-    // ✅ store token in cookies
+    // Store token in cookies.
     Cookies.set("token", data.token, { expires: 7 });
 
-    // ✅ store user in localStorage (ok to keep)
+    // Store user details in localStorage.
     localStorage.setItem("user", JSON.stringify(data.user));
 
     setUser(data.user);
   };
 
   const logout = () => {
-    // ✅ remove cookie
+    // Remove cookie on user logout.
     Cookies.remove("token");
 
-    // ✅ clear user
+    // Clear user details on user logout.
     localStorage.removeItem("user");
 
     setUser(null);

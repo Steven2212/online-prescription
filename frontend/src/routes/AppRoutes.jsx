@@ -6,7 +6,10 @@ import Login from "../pages/auth/Login";
 import DoctorList from "../pages/patient/DoctorList";
 import ConsultationForm from "../pages/patient/ConsultationForm";
 import Home from "../pages/Home";
-import DoctorDashboard from "../pages/doctor/doctorDashboard";
+import DoctorDashboard from "../pages/doctor/DoctorDashboard";
+import MyConsultations from "../pages/patient/MyConsultations";
+import PrescriptionForm from "../pages/doctor/PrescriptionForm";
+import PrescriptionPage from "../pages/doctor/PrescriptionPage";
 
 export default function AppRoutes() {
   return (
@@ -18,7 +21,15 @@ export default function AppRoutes() {
       <Route path="/doctors" element={<DoctorList />} />
       <Route path="/consult/:doctorId" element={<ConsultationForm />} />
       <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-      {/* <Route path="/doctor/prescriptions" element={<PrescriptionPage />} /> */}
+      <Route path="/patient/consultations" element={<MyConsultations />} />
+      <Route
+        path="/doctor/prescription/:consultationId"
+        element={<PrescriptionForm />}
+      />
+      <Route
+        path="/doctor/prescription/view/:consultationId"
+        element={<PrescriptionPage />}
+      />
     </Routes>
   );
 }
