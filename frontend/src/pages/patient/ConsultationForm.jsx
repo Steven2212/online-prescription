@@ -13,50 +13,50 @@ export default function ConsultationForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-const submit = async () => {
-  try {
-    const user = JSON.parse(localStorage.getItem("user"));
+  const submit = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
 
-    const payload = {
-      patientId: user?._id, 
-      doctorId,
+      const payload = {
+        patientId: user?._id,
+        doctorId,
 
-      // STEP 1
-      currentIllness: form.illness,
-      recentSurgery: form.surgery,
+        // STEP 1
+        currentIllness: form.illness,
+        recentSurgery: form.surgery,
 
-      // STEP 2
-      isDiabetic: form.diabetic,
-      allergies: form.allergies,
-      otherConditions: form.others,
+        // STEP 2
+        isDiabetic: form.diabetic,
+        allergies: form.allergies,
+        otherConditions: form.others,
 
-      // STEP 3
-      transactionId: form.transactionId
-    };
+        // STEP 3
+        transactionId: form.transactionId,
+      };
 
-    console.log("Payload : ", payload); // debug
+      console.log("Payload : ", payload); // debug
 
-    await API.post("/api/consultations", payload);
-    navigate("/patient/consultations");
-    toast.success("Consultation Submitted ✅");
-
-  } catch (err) {
-    console.error(err);
-    toast.error("Error submitting consultation. Please try again later.");
-  }
-};
+      await API.post("/api/consultations", payload);
+      navigate("/patient/consultations");
+      toast.success("Consultation Submitted ✅");
+    } catch (err) {
+      console.error(err);
+      toast.error("Error submitting consultation. Please try again later.");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-xl">
-
         {/* 🔵 Step Indicator */}
         <div className="flex justify-between mb-6">
           {["Illness", "History", "Payment"].map((label, index) => (
             <div
               key={index}
               className={`flex-1 text-center pb-2 border-b-4 ${
-                step === index + 1 ? "border-blue-500 font-semibold" : "border-gray-300"
+                step === index + 1
+                  ? "border-blue-500 font-semibold"
+                  : "border-gray-300"
               }`}
             >
               {label}
@@ -94,12 +94,22 @@ const submit = async () => {
               <p className="mb-2 font-medium">Diabetic?</p>
               <div className="flex gap-6">
                 <label className="flex items-center gap-2">
-                  <input type="radio" name="diabetic" value="yes" onChange={handleChange} />
+                  <input
+                    type="radio"
+                    name="diabetic"
+                    value="yes"
+                    onChange={handleChange}
+                  />
                   Yes
                 </label>
 
                 <label className="flex items-center gap-2">
-                  <input type="radio" name="diabetic" value="no" onChange={handleChange} />
+                  <input
+                    type="radio"
+                    name="diabetic"
+                    value="no"
+                    onChange={handleChange}
+                  />
                   No
                 </label>
               </div>
@@ -127,10 +137,13 @@ const submit = async () => {
             <h2 className="text-xl font-semibold">Payment</h2>
 
             {/* Fake QR */}
+
             <div className="flex justify-center">
-              <div className="w-40 h-40 bg-gray-200 flex items-center justify-center rounded-lg">
-                QR Code
-              </div>
+              <img
+                src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=UPI-ID-12345"
+                alt="QR Code"
+                className="rounded-lg border"
+              />
             </div>
 
             <input
