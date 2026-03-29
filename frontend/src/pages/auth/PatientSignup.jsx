@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import API from "../../api/axios";
 import toast from "react-hot-toast";
+import handleApiError from "../../utils/handleApiError";
 
 const PatientSignup = () => {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const PatientSignup = () => {
       }
 
     } catch (err) {
-      toast.error(err.response?.data?.msg || "Signup failed");
+      handleApiError(err)
     }
   };
 

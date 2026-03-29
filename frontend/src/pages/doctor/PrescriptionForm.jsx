@@ -5,7 +5,7 @@ export default function PrescriptionForm({ consultationId }) {
   const [form, setForm] = useState({});
 
   const submit = async () => {
-    await API.post("/prescriptions", {
+    await API.post("/api/prescriptions", {
       ...form,
       consultationId
     });

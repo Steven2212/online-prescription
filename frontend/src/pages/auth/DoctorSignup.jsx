@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import API from "../../api/axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import handleApiError from "../../utils/handleApiError";
 
 export default function DoctorSignup() {
   const { register, handleSubmit } = useForm();
@@ -13,7 +14,7 @@ export default function DoctorSignup() {
 
       Object.keys(data).forEach((key) => {
         if (key === "profileImage") {
-          formData.append(key, data[key][0]); // file handling fix
+          formData.append(key, data[key][0]); 
         } else {
           formData.append(key, data[key]);
         }
@@ -27,7 +28,7 @@ export default function DoctorSignup() {
       }
 
     } catch (err) {
-      toast.error(err.response?.data?.msg || "Signup failed");
+      handleApiError(err)
     }
   };
 

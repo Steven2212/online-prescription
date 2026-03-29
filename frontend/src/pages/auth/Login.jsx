@@ -1,13 +1,13 @@
 import { useState, useContext } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import toast from "react-hot-toast";
+import API from "../../api/axios";
+import handleApiError from "../../utils/handleApiError";
 
 const Login = () => {
   const navigate = useNavigate();
 
-  // ✅ FIX: useContext inside component
   const { login } = useContext(AuthContext);
 
   const [form, setForm] = useState({
@@ -24,37 +24,26 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        form
-      );
+      const res = await API.post("/api/auth/login", form);
 
-      // ✅ Use context login
       login(res.data);
 
+      toast.success("Login successful");
       // Redirect
-      if (form.role === "doctor") {
-        toast.success('Login successful')
-        navigate("/doctor/dashboard");
-      } else {
-        toast.success('Login successful')
-        navigate("/doctors");
-      }
+      navigate(form.role === "doctor" ? "/doctor/dashboard" : "/doctors");
     } catch (err) {
-      toast.error(err.response?.data?.msg || "Login failed");
+      handleApiError(err);
     }
   };
 
   return (
     <div className="flex justify-center items-center min-h-[80vh]">
       <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
-        
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
           Login to your account
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Email

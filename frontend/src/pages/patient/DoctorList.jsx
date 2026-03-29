@@ -6,7 +6,7 @@ export default function DoctorList() {
   const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
-    API.get("/doctors").then((res) => setDoctors(res.data));
+    API.get("/api/doctors").then((res) => setDoctors(res.data));
   }, []);
 
   return (

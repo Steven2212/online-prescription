@@ -12,7 +12,7 @@ export default function ConsultationForm() {
   };
 
   const submit = async () => {
-    await API.post("/consultations", {
+    await API.post("/api/consultations", {
       ...form,
       doctorId
     });

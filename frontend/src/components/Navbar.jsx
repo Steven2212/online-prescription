@@ -26,7 +26,7 @@ export default function Navbar() {
         
         {/* Logo */}
         <h1
-          className="text-xl font-bold tracking-wide cursor-pointer"
+          className="text-xl font-bold tracking-wide cursor-pointer text-white"
           onClick={() => navigate("/")}
         >
           💊 Prescription App

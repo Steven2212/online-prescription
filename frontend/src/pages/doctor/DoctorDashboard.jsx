@@ -5,7 +5,7 @@ export default function DoctorDashboard() {
   const [consultations, setConsultations] = useState([]);
 
   useEffect(() => {
-    API.get("/consultations/doctor").then((res) =>
+    API.get("/api/consultations/doctor").then((res) =>
       setConsultations(res.data)
     );
   }, []);
