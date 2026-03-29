@@ -8,6 +8,21 @@ export default function PrescriptionPage() {
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const user = JSON.parse(localStorage.getItem("user"));
+
+const handleSendEmail = async () => {
+  try {
+    await API.post("/api/prescriptions/send-email", {
+      consultationId
+    });
+
+    toast.success("Email sent to patient 📧");
+
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to send email ❌");
+  }
+};
 
 const handleDownload = async () => {
   try {
@@ -105,6 +120,15 @@ const handleDownload = async () => {
 >
   Download PDF
 </button>
+
+{user?.role === "doctor" && (
+  <button
+    onClick={handleSendEmail}
+    className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+  >
+    Send Email
+  </button>
+)}
         </div>
       </div>
     </div>

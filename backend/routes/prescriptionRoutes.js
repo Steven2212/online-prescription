@@ -6,14 +6,16 @@ const { authorizeRoles } = require("../middleware/roleMiddleware");
 router.post(
   "/",
   protect,
-  authorizeRoles("doctor"), 
-  controller.createPrescription
+  authorizeRoles("doctor"),
+  controller.createPrescription,
 );
 
-router.get(
-  "/:consultationId",
-  protect,
-  controller.getByConsultation
+router.get("/:consultationId", protect, controller.getByConsultation);
+
+router.post(
+  "/send-email",
+  // authorizeRoles("doctor"),
+  controller.sendPrescriptionEmail,
 );
 
 module.exports = router;
