@@ -34,12 +34,12 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
 
-          {/* Always visible */}
+          {/* Doctors List */}
           <Link to="/doctors" className={linkClass("/doctors")}>
             Doctors
           </Link>
 
-          {/* 🔥 PATIENT */}
+          {/* PATIENT */}
           {user?.role === "patient" && (
             <Link
               to="/patient/consultations"
@@ -49,7 +49,7 @@ export default function Navbar() {
             </Link>
           )}
 
-          {/* 🔥 DOCTOR */}
+          {/* DOCTOR */}
           {user?.role === "doctor" && (
             <Link
               to="/doctor/dashboard"

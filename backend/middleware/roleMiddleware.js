@@ -1,3 +1,6 @@
+
+//To authorize roles to Doctor and Patient.
+
 exports.authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {

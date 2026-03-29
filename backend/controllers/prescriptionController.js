@@ -3,6 +3,8 @@ const Consultation = require("../models/Consultation");
 const { generatePrescriptionPDF } = require("../utils/pdfGenerator");
 const { sendPrescriptionEmail } = require("../utils/sendEmail");
 
+
+//Create Prescription.
 exports.createPrescription = async (req, res) => {
   try {
     const { consultationId, careToBeTaken, medicines } = req.body;
@@ -11,6 +13,7 @@ exports.createPrescription = async (req, res) => {
       .populate("doctorId")
       .populate("patientId");
 
+      //Generate pdf.
     const pdfPath = await generatePrescriptionPDF({
       doctorName: consultation.doctorId.name,
       patientName: consultation.patientId.name,
@@ -18,6 +21,7 @@ exports.createPrescription = async (req, res) => {
       medicines
     });
 
+    //Store prescription details in mongoDB.
     const prescription = await Prescription.create({
       consultationId,
       doctorId: consultation.doctorId._id,
@@ -37,6 +41,7 @@ exports.createPrescription = async (req, res) => {
   }
 };
 
+//Get Prescription.
 exports.getByConsultation = async (req, res) => {
   try {
     const data = await Prescription.find({
@@ -48,6 +53,7 @@ exports.getByConsultation = async (req, res) => {
   }
 };
 
+//Send Prescription pdf to Patient's email.
 exports.sendPrescriptionEmail = async (req, res) => {
   try {
     const { consultationId } = req.body;
@@ -74,6 +80,7 @@ exports.sendPrescriptionEmail = async (req, res) => {
   }
 };
 
+//Update prescription.
 exports.updatePrescription = async (req, res) => {
   try {
     const { consultationId, careToBeTaken, medicines } = req.body;
@@ -86,12 +93,12 @@ exports.updatePrescription = async (req, res) => {
       return res.status(404).json({ error: "Prescription not found" });
     }
 
-    // 🔐 Ensure only same doctor edits
+    // Ensure only same doctor edits
     if (prescription.doctorId._id.toString() !== req.user.id) {
       return res.status(403).json({ error: "Not authorized" });
     }
 
-    // 🔥 Regenerate PDF
+    // Regenerate PDF
     const pdfPath = await generatePrescriptionPDF({
       doctorName: prescription.doctorId.name,
       patientName: prescription.patientId.name,
@@ -99,14 +106,14 @@ exports.updatePrescription = async (req, res) => {
       medicines
     });
 
-    // ✅ Update fields
+    // Update fields
     prescription.careToBeTaken = careToBeTaken;
     prescription.medicines = medicines;
     prescription.pdfUrl = pdfPath;
 
     await prescription.save();
 
-    res.json({ message: "Prescription updated ✅", prescription });
+    res.json({ message: "Prescription updated.", prescription });
 
   } catch (err) {
     console.error(err);

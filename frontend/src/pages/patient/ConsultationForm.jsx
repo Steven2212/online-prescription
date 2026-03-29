@@ -48,7 +48,8 @@ export default function ConsultationForm() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-xl">
-        {/* 🔵 Step Indicator */}
+        
+        {/* Step Indicator */}
         <div className="flex justify-between mb-6">
           {["Illness", "History", "Payment"].map((label, index) => (
             <div
@@ -64,7 +65,7 @@ export default function ConsultationForm() {
           ))}
         </div>
 
-        {/* 🟢 STEP 1 */}
+        {/* STEP 1 */}
         {step === 1 && (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Current Health Details</h2>
@@ -85,7 +86,7 @@ export default function ConsultationForm() {
           </div>
         )}
 
-        {/* 🟡 STEP 2 */}
+        {/* STEP 2 */}
         {step === 2 && (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Family Medical History</h2>
@@ -131,7 +132,7 @@ export default function ConsultationForm() {
           </div>
         )}
 
-        {/* 🔴 STEP 3 */}
+        {/* STEP 3 */}
         {step === 3 && (
           <div className="space-y-4 text-center">
             <h2 className="text-xl font-semibold">Payment</h2>
@@ -155,7 +156,7 @@ export default function ConsultationForm() {
           </div>
         )}
 
-        {/* 🔘 Buttons */}
+        {/* Buttons */}
         <div className="flex justify-between mt-6">
           {step > 1 && (
             <button

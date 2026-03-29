@@ -11,7 +11,7 @@ export default function DoctorCard({ doctor }) {
   return (
     <div className="bg-white border rounded-xl shadow hover:shadow-md transition p-4 w-full max-w-xs">
 
-      {/* 🔹 Image */}
+      {/* Image */}
       <div className="w-full h-40 overflow-hidden rounded-lg">
         <img
           src={doctor.profileImage || "https://via.placeholder.com/300"}
@@ -20,13 +20,13 @@ export default function DoctorCard({ doctor }) {
         />
       </div>
 
-      {/* 🔹 Info */}
+      {/* Info */}
       <div className="mt-3">
         <h2 className="font-semibold text-lg">{doctor.name}</h2>
         <p className="text-gray-500 text-sm">{doctor.speciality}</p>
       </div>
 
-      {/* 🔹 Button */}
+      {/* Button */}
       <button
         disabled={!isPatient}
         onClick={() => {
@@ -44,7 +44,7 @@ export default function DoctorCard({ doctor }) {
         Consult
       </button>
 
-      {/* 🔹 Messages */}
+      {/* Messages */}
       {!user && (
         <p className="text-xs text-red-500 mt-2 text-center">
           Login as patient to consult

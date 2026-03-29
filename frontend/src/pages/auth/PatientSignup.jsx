@@ -7,7 +7,6 @@ import handleApiError from "../../utils/handleApiError";
 
 const PatientSignup = () => {
   const navigate = useNavigate();
-  // const { login } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     name: "",
@@ -46,7 +45,7 @@ const PatientSignup = () => {
 
       let res = await API.post("/api/auth/patient/signup", formData);
 
-    // ✅ redirect to login page after signup
+    // Redirect to login page after signup
     
           if(res?.data?.status == 'success' && res?.data?.message == 'Patient created successfully.'){
       toast.success("Patient Registered!");

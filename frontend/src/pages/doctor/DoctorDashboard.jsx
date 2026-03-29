@@ -8,7 +8,7 @@ export default function DoctorDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user?._id) return; // 🚨 wait until user is ready
+    if (!user?._id) return; // Wait until user is ready
 
     const fetchData = async () => {
       try {

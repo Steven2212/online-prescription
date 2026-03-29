@@ -1,6 +1,8 @@
 const Payment = require("../models/Payment");
 const Consultation = require("../models/Consultation");
 
+
+//Store Payment Details.
 exports.createPayment = async (req, res) => {
   try {
     const payment = await Payment.create(req.body);

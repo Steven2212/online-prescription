@@ -32,11 +32,11 @@ exports.generatePrescriptionPDF = async (data) => {
 
     await browser.close();
 
-    // ✅ Upload to Supabase
+    // Upload to Supabase
     const fileName = `prescription_${Date.now()}.pdf`;
 
     const { data: uploadData, error } = await supabase.storage
-      .from("prescriptions") // 👈 bucket name
+      .from("prescriptions") // bucket name
       .upload(fileName, pdfBuffer, {
         contentType: "application/pdf"
       });
@@ -46,7 +46,7 @@ exports.generatePrescriptionPDF = async (data) => {
       throw error;
     }
 
-    // ✅ Get public URL
+    // Get public URL
     const { data: publicUrlData } = supabase.storage
       .from("prescriptions")
       .getPublicUrl(fileName);

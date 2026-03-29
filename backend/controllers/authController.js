@@ -3,6 +3,8 @@ const Patient = require("../models/Patient");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+
+//To generate JWT.
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, {
     expiresIn: "7d",
@@ -14,7 +16,8 @@ exports.doctorSignup = async (req, res) => {
   try {
     const { email, phone, password } = req.body;
 
-    const existing = await Doctor.findOne({ $or: [{ email }, { phone }] });
+    //Check doctor already exist.
+    const existing = await Doctor.findOne({ $or: [{ email }, { phone }] }); 
     if (existing)
       return res.status(409).json({
         status: "error",
@@ -22,8 +25,9 @@ exports.doctorSignup = async (req, res) => {
         message: "Doctor already exists",
       });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10); //Hash the password.
 
+    //Store the doctor details in mongoDB.
     const doctor = await Doctor.create({
       ...req.body,
       password: hashedPassword,
@@ -51,14 +55,16 @@ exports.patientSignup = async (req, res) => {
   try {
     const { email, phone, password } = req.body;
 
+    //Check Patient already exist.
     const existing = await Patient.findOne({ $or: [{ email }, { phone }] });
     if (existing)
       return res
         .status(409)
         .json({ status: "error", statusCode: 409, message: "Patient exists" });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10); //Hash the password.
 
+    //Store Patient Details in mongoDB.
     const patient = await Patient.create({
       ...req.body,
       password: hashedPassword,
@@ -83,7 +89,7 @@ exports.patientSignup = async (req, res) => {
   }
 };
 
-// Login (common)
+// Login Doctor or Patient.
 exports.login = async (req, res) => {
   try {
     const { email, password, role } = req.body;

@@ -1,5 +1,6 @@
 const Consultation = require("../models/Consultation");
 
+//Create Consultation.
 exports.createConsultation = async (req, res) => { 
   try {
     const consultation = await Consultation.create(req.body);
@@ -9,6 +10,7 @@ exports.createConsultation = async (req, res) => {
   }
 };
 
+//Get all consultations of the Doctor.
 exports.getDoctorConsultations = async (req, res) => {
   try {
     const consultations = await Consultation.find({
@@ -21,6 +23,7 @@ exports.getDoctorConsultations = async (req, res) => {
   }
 };
 
+//Get all consultations of the Patient.
 exports.getPatientConsultations = async (req, res) => {
   try {
     const consultations = await Consultation.find({

@@ -1,5 +1,6 @@
 const Patient = require("../models/Patient");
 
+//Get Patient Profile details.
 exports.getPatientProfile = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id).select("-password");

@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 
+//To authenticate the APIs based on JWT.
 exports.protect = (req, res, next) => {
   try {
     let token = req.headers.authorization;

@@ -2,6 +2,7 @@ import axios from "axios";
 import appConfig from "../config/appConfig";
 import Cookies from "js-cookie";
 
+//API Calls
 const API = axios.create({
   baseURL: appConfig.API_BASE_URL,
   timeout: appConfig.API_BASE_URL_TIMEOUT
