@@ -114,13 +114,18 @@ exports.login = async (req, res) => {
       });
     }
 
+const userWithRole = {
+  ...user._doc,
+  role
+};
+
     //Login Successful
     return res.status(200).json({
       status: "success",
       statusCode: 200,
       message: "Login successful",
       token: generateToken(user._id, role),
-      user,
+      user:userWithRole
     });
   } catch (err) {
     return res.status(500).json({
