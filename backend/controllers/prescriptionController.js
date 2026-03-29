@@ -73,3 +73,43 @@ exports.sendPrescriptionEmail = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.updatePrescription = async (req, res) => {
+  try {
+    const { consultationId, careToBeTaken, medicines } = req.body;
+
+    const prescription = await Prescription.findOne({ consultationId })
+      .populate("doctorId")
+      .populate("patientId");
+
+    if (!prescription) {
+      return res.status(404).json({ error: "Prescription not found" });
+    }
+
+    // 🔐 Ensure only same doctor edits
+    if (prescription.doctorId._id.toString() !== req.user.id) {
+      return res.status(403).json({ error: "Not authorized" });
+    }
+
+    // 🔥 Regenerate PDF
+    const pdfPath = await generatePrescriptionPDF({
+      doctorName: prescription.doctorId.name,
+      patientName: prescription.patientId.name,
+      careToBeTaken,
+      medicines
+    });
+
+    // ✅ Update fields
+    prescription.careToBeTaken = careToBeTaken;
+    prescription.medicines = medicines;
+    prescription.pdfUrl = pdfPath;
+
+    await prescription.save();
+
+    res.json({ message: "Prescription updated ✅", prescription });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};

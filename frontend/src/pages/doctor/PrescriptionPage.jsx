@@ -9,6 +9,11 @@ export default function PrescriptionPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const user = JSON.parse(localStorage.getItem("user"));
+  const [isEditing, setIsEditing] = useState(false);
+const [form, setForm] = useState({
+  careToBeTaken: "",
+  medicines: ""
+});
 
 const handleSendEmail = async () => {
   try {
@@ -21,6 +26,25 @@ const handleSendEmail = async () => {
   } catch (err) {
     console.error(err);
     toast.error("Failed to send email ❌");
+  }
+};
+
+const handleUpdate = async () => {
+  try {
+    await API.put("/api/prescriptions/update", {
+      consultationId,
+      ...form
+    });
+
+    toast.success("Prescription updated ✅");
+    setIsEditing(false);
+
+    // reload
+    window.location.reload();
+
+  } catch (err) {
+    console.error(err);
+    toast.error("Update failed ❌");
   }
 };
 
@@ -45,6 +69,15 @@ const handleDownload = async () => {
     toast.error("Download failed ❌");
   }
 };
+
+useEffect(() => {
+  if (data) {
+    setForm({
+      careToBeTaken: data.careToBeTaken,
+      medicines: data.medicines
+    });
+  }
+}, [data]);
 
   useEffect(() => {
     const fetchPrescription = async () => {
@@ -83,53 +116,107 @@ const handleDownload = async () => {
 
         {/* Details */}
         <div className="space-y-4">
-          <div>
-            <p className="font-semibold">Care to be Taken</p>
-            <p className="text-gray-700">{data.careToBeTaken}</p>
-          </div>
 
-          <div>
-            <p className="font-semibold">Medicines</p>
-            <p className="text-gray-700">{data.medicines}</p>
-          </div>
+  {/* Care */}
+  <div>
+    <p className="font-semibold">Care to be Taken</p>
 
-          <div>
-            <p className="font-semibold">Date</p>
-            <p className="text-gray-600">
-              {new Date(data.createdAt).toLocaleString()}
-            </p>
-          </div>
-        </div>
+    {isEditing ? (
+      <textarea
+        className="w-full border p-2 rounded mt-1"
+        value={form.careToBeTaken}
+        onChange={(e) =>
+          setForm({ ...form, careToBeTaken: e.target.value })
+        }
+      />
+    ) : (
+      <p className="text-gray-700">{data.careToBeTaken}</p>
+    )}
+  </div>
+
+  {/* Medicines */}
+  <div>
+    <p className="font-semibold">Medicines</p>
+
+    {isEditing ? (
+      <textarea
+        className="w-full border p-2 rounded mt-1"
+        value={form.medicines}
+        onChange={(e) =>
+          setForm({ ...form, medicines: e.target.value })
+        }
+      />
+    ) : (
+      <p className="text-gray-700">{data.medicines}</p>
+    )}
+  </div>
+
+  {/* Date */}
+  <div>
+    <p className="font-semibold">Date</p>
+    <p className="text-gray-600">
+      {new Date(data.createdAt).toLocaleString()}
+    </p>
+  </div>
+
+</div>
 
         {/* Actions */}
-        <div className="flex justify-between mt-8">
-          {/* View PDF */}
-          <a
-            href={data.pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            View PDF
-          </a>
+        <div className="flex justify-between mt-8 flex-wrap gap-3">
 
-          {/* Download PDF */}
-          <button
-  onClick={handleDownload}
-  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
->
-  Download PDF
-</button>
-
-{user?.role === "doctor" && (
-  <button
-    onClick={handleSendEmail}
-    className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+  <a
+    href={data.pdfUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
   >
-    Send Email
+    View PDF
+  </a>
+
+  <button
+    onClick={handleDownload}
+    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+  >
+    Download PDF
   </button>
-)}
-        </div>
+
+  {user?.role === "doctor" && !isEditing && (
+    <>
+      <button
+        onClick={handleSendEmail}
+        className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+      >
+        Send Email
+      </button>
+
+      <button
+        onClick={() => setIsEditing(true)}
+        className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+      >
+        Edit
+      </button>
+    </>
+  )}
+
+  {user?.role === "doctor" && isEditing && (
+    <>
+      <button
+        onClick={handleUpdate}
+        className="px-4 py-2 bg-green-600 text-white rounded"
+      >
+        Save
+      </button>
+
+      <button
+        onClick={() => setIsEditing(false)}
+        className="px-4 py-2 bg-gray-500 text-white rounded"
+      >
+        Cancel
+      </button>
+    </>
+  )}
+
+</div>
       </div>
     </div>
   );

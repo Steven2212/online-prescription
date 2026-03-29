@@ -18,4 +18,11 @@ router.post(
   controller.sendPrescriptionEmail,
 );
 
+router.put(
+  "/update",
+  protect,
+  authorizeRoles("doctor"),
+  controller.updatePrescription
+);
+
 module.exports = router;
