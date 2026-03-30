@@ -26,7 +26,7 @@ export default function ConsultationForm() {
         recentSurgery: form.surgery,
 
         // STEP 2
-        isDiabetic: form.diabetic,
+        isDiabetic: form.diabetic == "yes" ? "Diabetic" : "Non-Diabetic",
         allergies: form.allergies,
         otherConditions: form.others,
 
