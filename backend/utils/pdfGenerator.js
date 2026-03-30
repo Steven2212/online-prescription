@@ -2,15 +2,27 @@ const puppeteer = require("puppeteer-core");
 const chromium = require("@sparticuz/chromium");
 const supabase = require("../config/supabase");
 
+chromium.setHeadlessMode = true;
+chromium.setGraphicsMode = false;
+
 exports.generatePrescriptionPDF = async (data) => {
   let browser;
 
   try {
-    browser = await puppeteer.launch({
-      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-    });
+browser = await puppeteer.launch({
+  args: [
+    ...chromium.args,
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+  ],
+  executablePath:
+    process.env.NODE_ENV === "PROD"
+      ? await chromium.executablePath()
+      : undefined,
+  headless: true,
+});
 
     const page = await browser.newPage();
 
