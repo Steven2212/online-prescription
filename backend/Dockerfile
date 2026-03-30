@@ -1,5 +1,5 @@
 # Use Node base image
-FROM node:18
+FROM node:20
 
 # Set working directory
 WORKDIR /app
@@ -13,8 +13,8 @@ RUN npm install
 # Copy all files
 COPY . .
 
-# Expose port
-EXPOSE 5000
+# Expose Railway port
+EXPOSE 8080
 
-# Start server
-CMD ["npm", "run", "dev"]
+# Start server (production)
+CMD ["node", "server.js"]
