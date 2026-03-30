@@ -1,12 +1,17 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
+const chromium = require("@sparticuz/chromium");
 const supabase = require("../config/supabase");
 
 exports.generatePrescriptionPDF = async (data) => {
-  const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox"]
-  });
+  let browser;
 
   try {
+    browser = await puppeteer.launch({
+      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    });
+
     const page = await browser.newPage();
 
     const html = `
@@ -25,7 +30,6 @@ exports.generatePrescriptionPDF = async (data) => {
 
     const rawPdf = await page.pdf({ format: "A4" });
 
-    // Ensure buffer (important)
     const pdfBuffer = Buffer.isBuffer(rawPdf)
       ? rawPdf
       : Buffer.from(rawPdf);
@@ -36,9 +40,9 @@ exports.generatePrescriptionPDF = async (data) => {
     const fileName = `prescription_${Date.now()}.pdf`;
 
     const { data: uploadData, error } = await supabase.storage
-      .from("prescriptions") // bucket name
+      .from("prescriptions")
       .upload(fileName, pdfBuffer, {
-        contentType: "application/pdf"
+        contentType: "application/pdf",
       });
 
     if (error) {
@@ -54,7 +58,7 @@ exports.generatePrescriptionPDF = async (data) => {
     return publicUrlData.publicUrl;
 
   } catch (error) {
-    await browser.close();
+    if (browser) await browser.close();
     console.error("PDF Generation Error:", error);
     throw error;
   }
