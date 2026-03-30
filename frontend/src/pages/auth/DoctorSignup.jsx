@@ -14,7 +14,7 @@ export default function DoctorSignup() {
 
       Object.keys(data).forEach((key) => {
         if (key === "profileImage") {
-          formData.append(key, data[key][0]); 
+          formData.append(key, data[key][0]);
         } else {
           formData.append(key, data[key]);
         }
@@ -22,20 +22,21 @@ export default function DoctorSignup() {
 
       let res = await API.post("/api/auth/doctor/signup", formData);
 
-      if(res?.data?.status == 'success' && res?.data?.message == 'Doctor created successfully.'){
-      toast.success("Doctor Registered!");
-      navigate("/login");
+      if (
+        res?.data?.status == "success" &&
+        res?.data?.message == "Doctor created successfully."
+      ) {
+        toast.success("Doctor Registered!");
+        navigate("/login");
       }
-
     } catch (err) {
-      handleApiError(err)
+      handleApiError(err);
     }
   };
 
   return (
     <div className="flex justify-center items-center min-h-[80vh]">
       <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg">
-
         {/* Title */}
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
           Doctor Signup 👨‍⚕️
@@ -43,7 +44,6 @@ export default function DoctorSignup() {
 
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -75,18 +75,19 @@ export default function DoctorSignup() {
             </label>
             <input
               type="number"
+              step="0.1"
               {...register("experience", {
                 min: 1,
-                max: 100
+                max: 100,
               })}
               min={1}
-  max={100}
+              max={100}
               placeholder="e.g. 5"
-               onKeyDown={(e) => {
-    if (e.key === "-" || e.key === "e") {
-      e.preventDefault();
-    }
-  }}
+              onKeyDown={(e) => {
+                if (e.key === "-" || e.key === "e") {
+                  e.preventDefault();
+                }
+              }}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
