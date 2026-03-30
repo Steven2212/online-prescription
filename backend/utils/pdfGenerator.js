@@ -1,68 +1,51 @@
-const puppeteer = require("puppeteer-core");
-const chromium = require("@sparticuz/chromium");
+const PDFDocument = require("pdfkit");
 const supabase = require("../config/supabase");
 
-chromium.setHeadlessMode = true;
-chromium.setGraphicsMode = false;
-
 exports.generatePrescriptionPDF = async (data) => {
-  let browser;
-
   try {
-browser = await puppeteer.launch({
-  args: [
-    ...chromium.args,
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--disable-gpu",
-  ],
-  executablePath:
-    process.env.NODE_ENV === "PROD"
-      ? await chromium.executablePath()
-      : undefined,
-  headless: true,
-});
+    const doc = new PDFDocument();
 
-    const page = await browser.newPage();
+    // Collect PDF in buffer
+    const buffers = [];
+    doc.on("data", buffers.push.bind(buffers));
 
-    const html = `
-      <h1 style="text-align:center;">Prescription</h1>
-      <p><strong>Doctor:</strong> ${data.doctorName}</p>
-      <p><strong>Patient:</strong> ${data.patientName}</p>
+    const pdfPromise = new Promise((resolve, reject) => {
+      doc.on("end", resolve);
+      doc.on("error", reject);
+    });
 
-      <h3>Care to be taken:</h3>
-      <p>${data.careToBeTaken}</p>
+    // 🎨 DESIGN (you can customize)
+    doc.fontSize(20).text("Prescription", { align: "center" });
+    doc.moveDown();
 
-      <h3>Medicines:</h3>
-      <p>${data.medicines || "N/A"}</p>
-    `;
+    doc.fontSize(12).text(`Doctor: ${data.doctorName}`);
+    doc.text(`Patient: ${data.patientName}`);
+    doc.moveDown();
 
-    await page.setContent(html, { waitUntil: "networkidle0" });
+    doc.fontSize(14).text("Care to be Taken:");
+    doc.fontSize(12).text(data.careToBeTaken);
+    doc.moveDown();
 
-    const rawPdf = await page.pdf({ format: "A4" });
+    doc.fontSize(14).text("Medicines:");
+    doc.fontSize(12).text(data.medicines || "N/A");
 
-    const pdfBuffer = Buffer.isBuffer(rawPdf)
-      ? rawPdf
-      : Buffer.from(rawPdf);
+    doc.end();
 
-    await browser.close();
+    await pdfPromise;
+
+    const pdfBuffer = Buffer.concat(buffers);
 
     // Upload to Supabase
     const fileName = `prescription_${Date.now()}.pdf`;
 
-    const { data: uploadData, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from("prescriptions")
       .upload(fileName, pdfBuffer, {
         contentType: "application/pdf",
       });
 
-    if (error) {
-      console.error("Supabase upload error:", error);
-      throw error;
-    }
+    if (error) throw error;
 
-    // Get public URL
     const { data: publicUrlData } = supabase.storage
       .from("prescriptions")
       .getPublicUrl(fileName);
@@ -70,7 +53,6 @@ browser = await puppeteer.launch({
     return publicUrlData.publicUrl;
 
   } catch (error) {
-    if (browser) await browser.close();
     console.error("PDF Generation Error:", error);
     throw error;
   }
